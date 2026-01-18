@@ -13,6 +13,7 @@ class WebViewController: NSViewController {
     
     private var webView: WKWebView!
     private var floatingButtonHost: NSHostingView<FloatingButton>?
+    private var titleBarView: TitleBarView?
     private var initialURL: URL?
     
     var onRequestClose: (() -> Void)?
@@ -27,15 +28,34 @@ class WebViewController: NSViewController {
     }
     
     override func loadView() {
-        // Create the main container view
-        view = NSView()
-        view.wantsLayer = true
-        view.layer?.backgroundColor = NSColor.black.cgColor
+        // Create the main container view with an initial size
+        let containerView = NSView(frame: NSRect(x: 0, y: 0, width: 800, height: 600))
+        containerView.wantsLayer = true
+        containerView.layer?.backgroundColor = NSColor.black.cgColor
+        view = containerView
+    }
+    
+    private func addTitleBar() {
+        // Create a title bar at the top
+        let titleBar = TitleBarView(frame: NSRect(
+            x: 0,
+            y: view.bounds.height - Constants.titleBarHeight,
+            width: view.bounds.width,
+            height: Constants.titleBarHeight
+        ))
+        titleBar.autoresizingMask = [.width, .minYMargin]
+        
+        view.addSubview(titleBar)
+        self.titleBarView = titleBar
+        
+        print("📐 Title bar frame: \(titleBar.frame)")
+        print("📐 View bounds: \(view.bounds)")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        addTitleBar()
         setupWebView()
         setupFloatingButton()
         
@@ -50,8 +70,10 @@ class WebViewController: NSViewController {
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default() // Persistent cookies/storage
         
-        // Create webview
-        webView = WKWebView(frame: view.bounds, configuration: config)
+        // Create webview - leave room for title bar at top
+        var webViewFrame = view.bounds
+        webViewFrame.size.height -= Constants.titleBarHeight
+        webView = WKWebView(frame: webViewFrame, configuration: config)
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.allowsBackForwardNavigationGestures = true
@@ -59,6 +81,19 @@ class WebViewController: NSViewController {
         webView.autoresizingMask = [.width, .height]
         
         view.addSubview(webView)
+        
+        // Update title when page loads
+        webView.addObserver(self, forKeyPath: "title", options: .new, context: nil)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "title" {
+            titleBarView?.updateTitle(webView.title ?? "")
+        }
+    }
+    
+    deinit {
+        webView?.removeObserver(self, forKeyPath: "title")
     }
     
     private func setupFloatingButton() {
@@ -76,12 +111,12 @@ class WebViewController: NSViewController {
         
         view.addSubview(hostingView)
         
-        // Position in top-right corner
+        // Position in top-right corner (button sizes itself, doesn't constrain window)
         NSLayoutConstraint.activate([
             hostingView.topAnchor.constraint(equalTo: view.topAnchor),
             hostingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            hostingView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            hostingView.widthAnchor.constraint(equalToConstant: 150),
+            hostingView.heightAnchor.constraint(equalToConstant: 70)
         ])
         
         floatingButtonHost = hostingView
@@ -193,9 +228,24 @@ extension WebViewController: WKNavigationDelegate {
             return
         }
         
-        // For all other schemes (mailto:, tel:, custom apps), forward to system
-        print("📤 Forwarding non-http(s) URL to system: \(url)")
-        NSWorkspace.shared.open(url)
+        // Allow special internal URLs (about:blank, data:, blob:, javascript:)
+        if scheme == "about" || scheme == "data" || scheme == "blob" || scheme == "javascript" {
+            decisionHandler(.allow)
+            return
+        }
+        
+        // For external schemes (mailto:, tel:, etc.), forward to system
+        // Only forward schemes that make sense to open externally
+        let externalSchemes = ["mailto", "tel", "sms", "facetime", "maps"]
+        if externalSchemes.contains(scheme) {
+            print("📤 Forwarding external URL to system: \(url)")
+            NSWorkspace.shared.open(url)
+            decisionHandler(.cancel)
+            return
+        }
+        
+        // Unknown scheme - cancel to be safe
+        print("⚠️ Blocked unknown URL scheme: \(scheme)://")
         decisionHandler(.cancel)
     }
     
@@ -255,5 +305,64 @@ extension WebViewController: WKUIDelegate {
         alert.addButton(withTitle: "Cancel")
         let response = alert.runModal()
         completionHandler(response == .alertFirstButtonReturn)
+    }
+    
+    // Disable credential storage requests (no keychain prompts)
+    func webView(_ webView: WKWebView,
+                 respondTo challenge: URLAuthenticationChallenge,
+                 completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        // Deny all credential storage requests
+        completionHandler(.performDefaultHandling, nil)
+    }
+}
+
+// MARK: - Title Bar View
+
+/// A compact title bar showing the page title
+class TitleBarView: NSView {
+    private var titleLabel: NSTextField!
+    
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
+    private func setupView() {
+        wantsLayer = true
+        layer?.backgroundColor = NSColor(white: 0.15, alpha: 0.95).cgColor
+        
+        // Create title label
+        titleLabel = NSTextField(labelWithString: "")
+        titleLabel.textColor = NSColor.lightGray
+        titleLabel.font = NSFont.systemFont(ofSize: 11, weight: .medium)
+        titleLabel.alignment = .center
+        titleLabel.lineBreakMode = .byTruncatingMiddle
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        addSubview(titleLabel)
+        
+        // Center the label with padding
+        NSLayoutConstraint.activate([
+            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12)
+        ])
+    }
+    
+    func updateTitle(_ title: String) {
+        titleLabel.stringValue = title
+    }
+    
+    override var mouseDownCanMoveWindow: Bool {
+        return true
+    }
+    
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        return true
     }
 }

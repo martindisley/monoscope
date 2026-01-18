@@ -16,11 +16,19 @@ class URLRouter {
     func openInNewWindow(_ url: URL) {
         print("🌐 Opening URL in new window: \(url)")
         
-        // Validate URL
-        guard url.scheme == "http" || url.scheme == "https" else {
-            print("⚠️ Invalid URL scheme for Monoscope: \(url.scheme ?? "nil")")
-            // Forward non-http(s) URLs to system
-            NSWorkspace.shared.open(url)
+        let scheme = url.scheme?.lowercased() ?? ""
+        
+        // Only open http(s) URLs in Monoscope windows
+        guard scheme == "http" || scheme == "https" else {
+            print("⚠️ Invalid URL scheme for Monoscope: \(scheme)")
+            
+            // Forward external schemes (mailto:, tel:, etc.) to system
+            let externalSchemes = ["mailto", "tel", "sms", "facetime", "maps"]
+            if externalSchemes.contains(scheme) {
+                print("📤 Forwarding external URL to system: \(url)")
+                NSWorkspace.shared.open(url)
+            }
+            // Ignore internal schemes like about:, data:, javascript:
             return
         }
         
@@ -33,6 +41,13 @@ class URLRouter {
         // Show window
         windowController.showWindow(nil)
         windowController.window?.makeKeyAndOrderFront(nil)
+        
+        // Debug: Print window frame
+        if let window = windowController.window {
+            print("🪟 Window frame: \(window.frame)")
+            print("🪟 Window visible: \(window.isVisible)")
+            print("🪟 Window on screen: \(window.isOnActiveSpace)")
+        }
     }
     
     /// Opens multiple URLs (each in its own window)

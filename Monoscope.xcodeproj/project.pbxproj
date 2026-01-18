@@ -1,0 +1,404 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		21BE94044A8906065804DB21 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D2392E2E66C2BA26BCBE2B9 /* Constants.swift */; };
+		2AAED60C037AE789B01A1164 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */; };
+		33E95910B28E5BCD823A2841 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBEE9FCD74BCCDE687EAA751 /* WelcomeView.swift */; };
+		6ACC6124656ED774B62D6B37 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133D05EEB8F9E7E06D9C858C /* SettingsStore.swift */; };
+		76D22F9DE8D6A50BB55BB53E /* URLRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87479E935EABEA82FEA09C83 /* URLRouter.swift */; };
+		7EFE318CCE95079C19E0EB53 /* BrowserOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B38545DE8F6060F7B56D4D /* BrowserOpener.swift */; };
+		8E67CEFEF33990D0952955F2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43839E116FE8020A7A68729E /* AppDelegate.swift */; };
+		9F141CF64ADF1A1DFB2B4E65 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC50FBD0283E790985FD691 /* MenuBarManager.swift */; };
+		A09C000C8F5718DF413FC159 /* MiniWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80D16B7355666860D64320B /* MiniWindowController.swift */; };
+		BF43D1A5A34DDE482F408C0E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C7C158B62D4E1BECE5CAD9 /* main.swift */; };
+		D3310A4880FD8BC4D7FBFEB1 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06161BD6110EF0D8C4FC73BA /* FloatingButton.swift */; };
+		DC96B57BEA73281D4A6CBEBC /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B6D67B3AB9399D4B3447C74 /* AboutView.swift */; };
+		E5B0001B544199C4DB2839C3 /* BrowserDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3D3490ADB56FD40A7BBB91 /* BrowserDetector.swift */; };
+		F3583820EAF53FDDD56D3579 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E55EEA8E4F678F5896FFF27 /* SettingsView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		06161BD6110EF0D8C4FC73BA /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
+		133D05EEB8F9E7E06D9C858C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		20B38545DE8F6060F7B56D4D /* BrowserOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserOpener.swift; sourceTree = "<group>"; };
+		2B6D67B3AB9399D4B3447C74 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		2D98E846C5987BB8FCE99A25 /* Monoscope.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Monoscope.entitlements; sourceTree = "<group>"; };
+		43839E116FE8020A7A68729E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4D2392E2E66C2BA26BCBE2B9 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		71C7C158B62D4E1BECE5CAD9 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		87479E935EABEA82FEA09C83 /* URLRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLRouter.swift; sourceTree = "<group>"; };
+		9A3835145D6FA93ADA66940F /* Monoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Monoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9E55EEA8E4F678F5896FFF27 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		AFC50FBD0283E790985FD691 /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
+		C80D16B7355666860D64320B /* MiniWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniWindowController.swift; sourceTree = "<group>"; };
+		DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		E6E60D639C44B81E9D27788A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EBEE9FCD74BCCDE687EAA751 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		EE3D3490ADB56FD40A7BBB91 /* BrowserDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserDetector.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		084BCB8B8D4BD147A7A7973D /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				2B6D67B3AB9399D4B3447C74 /* AboutView.swift */,
+				06161BD6110EF0D8C4FC73BA /* FloatingButton.swift */,
+				AFC50FBD0283E790985FD691 /* MenuBarManager.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		68B90A779574F92BECDFEE17 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C80D16B7355666860D64320B /* MiniWindowController.swift */,
+				87479E935EABEA82FEA09C83 /* URLRouter.swift */,
+				DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		888D34470D8ECA6FCCB02A22 /* Monoscope */ = {
+			isa = PBXGroup;
+			children = (
+				D4A5CFFD6A86A0360905D880 /* App */,
+				68B90A779574F92BECDFEE17 /* Core */,
+				FE953D48BE8F6F5E1796D537 /* Settings */,
+				084BCB8B8D4BD147A7A7973D /* UI */,
+				DEA57F83C3770D5654EBAC0B /* Utilities */,
+			);
+			path = Monoscope;
+			sourceTree = "<group>";
+		};
+		BCDB2C5F97E33CAA82AC1F41 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9A3835145D6FA93ADA66940F /* Monoscope.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D4A5CFFD6A86A0360905D880 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				43839E116FE8020A7A68729E /* AppDelegate.swift */,
+				E6E60D639C44B81E9D27788A /* Info.plist */,
+				71C7C158B62D4E1BECE5CAD9 /* main.swift */,
+				2D98E846C5987BB8FCE99A25 /* Monoscope.entitlements */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		DEA57F83C3770D5654EBAC0B /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				20B38545DE8F6060F7B56D4D /* BrowserOpener.swift */,
+				4D2392E2E66C2BA26BCBE2B9 /* Constants.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		FA9454DDAD051C79EC4349B5 = {
+			isa = PBXGroup;
+			children = (
+				888D34470D8ECA6FCCB02A22 /* Monoscope */,
+				BCDB2C5F97E33CAA82AC1F41 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FE953D48BE8F6F5E1796D537 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				EE3D3490ADB56FD40A7BBB91 /* BrowserDetector.swift */,
+				133D05EEB8F9E7E06D9C858C /* SettingsStore.swift */,
+				9E55EEA8E4F678F5896FFF27 /* SettingsView.swift */,
+				EBEE9FCD74BCCDE687EAA751 /* WelcomeView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5373F6F13AB35516B90BF51E /* Monoscope */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F509A3162D54850E950C98DE /* Build configuration list for PBXNativeTarget "Monoscope" */;
+			buildPhases = (
+				9D1EE95A6E98586B92C3CC2F /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Monoscope;
+			packageProductDependencies = (
+			);
+			productName = Monoscope;
+			productReference = 9A3835145D6FA93ADA66940F /* Monoscope.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		75B4D95B44453FD9C1023CD0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					5373F6F13AB35516B90BF51E = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2B8774C1391B2FDA6ED55AA9 /* Build configuration list for PBXProject "Monoscope" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = FA9454DDAD051C79EC4349B5;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5373F6F13AB35516B90BF51E /* Monoscope */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9D1EE95A6E98586B92C3CC2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DC96B57BEA73281D4A6CBEBC /* AboutView.swift in Sources */,
+				8E67CEFEF33990D0952955F2 /* AppDelegate.swift in Sources */,
+				E5B0001B544199C4DB2839C3 /* BrowserDetector.swift in Sources */,
+				7EFE318CCE95079C19E0EB53 /* BrowserOpener.swift in Sources */,
+				21BE94044A8906065804DB21 /* Constants.swift in Sources */,
+				D3310A4880FD8BC4D7FBFEB1 /* FloatingButton.swift in Sources */,
+				9F141CF64ADF1A1DFB2B4E65 /* MenuBarManager.swift in Sources */,
+				A09C000C8F5718DF413FC159 /* MiniWindowController.swift in Sources */,
+				6ACC6124656ED774B62D6B37 /* SettingsStore.swift in Sources */,
+				F3583820EAF53FDDD56D3579 /* SettingsView.swift in Sources */,
+				76D22F9DE8D6A50BB55BB53E /* URLRouter.swift in Sources */,
+				2AAED60C037AE789B01A1164 /* WebViewController.swift in Sources */,
+				33E95910B28E5BCD823A2841 /* WelcomeView.swift in Sources */,
+				BF43D1A5A34DDE482F408C0E /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4185B3F5869436E47D1FB590 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Monoscope/App/Monoscope.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Monoscope/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.monoscope.Monoscope;
+				PRODUCT_NAME = Monoscope;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		7FB7C7E4D15516258D47696C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F78B38535264621422A3323F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Monoscope/App/Monoscope.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Monoscope/App/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.monoscope.Monoscope;
+				PRODUCT_NAME = Monoscope;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F93E817EF9236D97A917C287 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2B8774C1391B2FDA6ED55AA9 /* Build configuration list for PBXProject "Monoscope" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7FB7C7E4D15516258D47696C /* Debug */,
+				F93E817EF9236D97A917C287 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F509A3162D54850E950C98DE /* Build configuration list for PBXNativeTarget "Monoscope" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4185B3F5869436E47D1FB590 /* Debug */,
+				F78B38535264621422A3323F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 75B4D95B44453FD9C1023CD0 /* Project object */;
+}

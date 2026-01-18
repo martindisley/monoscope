@@ -10,9 +10,9 @@ import AppKit
 
 enum Constants {
     // Window defaults
-    static let defaultWindowWidth: CGFloat = 900
-    static let defaultWindowHeight: CGFloat = 600
-    static let dragStripHeight: CGFloat = 20
+    static let defaultWindowWidth: CGFloat = 1400
+    static let defaultWindowHeight: CGFloat = 900
+    static let titleBarHeight: CGFloat = 32  // Compact title bar
     static let floatingButtonMargin: CGFloat = 16
     
     // App info
