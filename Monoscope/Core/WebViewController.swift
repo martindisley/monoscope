@@ -357,11 +357,26 @@ extension WebViewController: WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        // Don't show error page for cancelled navigations (error -999)
+        // This happens when navigating away before a page finishes loading
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            print("⏭️ Navigation cancelled (normal behavior)")
+            return
+        }
+        
         print("❌ Navigation failed: \(error.localizedDescription)")
         showErrorPage(error: error)
     }
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        // Don't show error page for cancelled navigations (error -999)
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            print("⏭️ Provisional navigation cancelled (normal behavior)")
+            return
+        }
+        
         print("❌ Provisional navigation failed: \(error.localizedDescription)")
         showErrorPage(error: error)
     }
