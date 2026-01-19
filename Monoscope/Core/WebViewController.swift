@@ -67,11 +67,6 @@ class WebViewController: NSViewController {
             name: .adBlockerSettingsDidChange,
             object: nil
         )
-        
-        // Load initial URL
-        if let url = initialURL {
-            webView.load(URLRequest(url: url))
-        }
     }
     
     private func setupWebView() {
@@ -82,17 +77,23 @@ class WebViewController: NSViewController {
         // Apply ad blocker if enabled
         if SettingsStore.shared.settings.enableAdBlocker {
             print("🛡️ Ad blocker enabled, applying content rules...")
-            ContentBlocker.shared.applyRules(to: config) { success in
+            ContentBlocker.shared.applyRules(to: config) { [weak self] success in
                 if success {
                     print("✅ Ad blocker active")
                 } else {
                     print("⚠️ Ad blocker failed to initialize")
                 }
+                // Create webview after rules are applied (or failed)
+                self?.createWebView(with: config)
             }
         } else {
             print("🔓 Ad blocker disabled")
+            // Create webview immediately if ad blocker is disabled
+            createWebView(with: config)
         }
-        
+    }
+    
+    private func createWebView(with config: WKWebViewConfiguration) {
         // Create webview - leave room for title bar at top
         var webViewFrame = view.bounds
         webViewFrame.size.height -= Constants.titleBarHeight
@@ -107,6 +108,11 @@ class WebViewController: NSViewController {
         
         // Update title when page loads
         webView.addObserver(self, forKeyPath: "title", options: .new, context: nil)
+        
+        // Load initial URL if we have one
+        if let url = initialURL {
+            webView.load(URLRequest(url: url))
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
