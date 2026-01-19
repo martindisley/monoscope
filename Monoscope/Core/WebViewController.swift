@@ -57,8 +57,6 @@ class WebViewController: NSViewController {
         
         addTitleBar()
         setupWebView()
-        setupFloatingButton()
-        restoreZoomLevel()
         
         // Listen for ad blocker setting changes
         NotificationCenter.default.addObserver(
@@ -108,6 +106,10 @@ class WebViewController: NSViewController {
         
         // Update title when page loads
         webView.addObserver(self, forKeyPath: "title", options: .new, context: nil)
+        
+        // Now that webView exists, restore zoom and setup floating button
+        restoreZoomLevel()
+        setupFloatingButton()
         
         // Load initial URL if we have one
         if let url = initialURL {
