@@ -60,6 +60,14 @@ class WebViewController: NSViewController {
         setupFloatingButton()
         restoreZoomLevel()
         
+        // Listen for ad blocker setting changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adBlockerSettingsDidChange),
+            name: .adBlockerSettingsDidChange,
+            object: nil
+        )
+        
         // Load initial URL
         if let url = initialURL {
             webView.load(URLRequest(url: url))
@@ -70,6 +78,20 @@ class WebViewController: NSViewController {
         // Configure WebKit
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default() // Persistent cookies/storage
+        
+        // Apply ad blocker if enabled
+        if SettingsStore.shared.settings.enableAdBlocker {
+            print("🛡️ Ad blocker enabled, applying content rules...")
+            ContentBlocker.shared.applyRules(to: config) { success in
+                if success {
+                    print("✅ Ad blocker active")
+                } else {
+                    print("⚠️ Ad blocker failed to initialize")
+                }
+            }
+        } else {
+            print("🔓 Ad blocker disabled")
+        }
         
         // Create webview - leave room for title bar at top
         var webViewFrame = view.bounds
@@ -95,6 +117,7 @@ class WebViewController: NSViewController {
     
     deinit {
         webView?.removeObserver(self, forKeyPath: "title")
+        NotificationCenter.default.removeObserver(self)
     }
     
     private func setupFloatingButton() {
@@ -103,9 +126,10 @@ class WebViewController: NSViewController {
             return
         }
         
-        let button = FloatingButton { [weak self] in
+        let browserName = SettingsStore.shared.settings.mainBrowserName
+        let button = FloatingButton(action: { [weak self] in
             self?.openInMainBrowser()
-        }
+        }, browserName: browserName)
         
         let hostingView = NSHostingView(rootView: button)
         hostingView.translatesAutoresizingMaskIntoConstraints = false
@@ -116,7 +140,7 @@ class WebViewController: NSViewController {
         NSLayoutConstraint.activate([
             hostingView.topAnchor.constraint(equalTo: view.topAnchor),
             hostingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingView.widthAnchor.constraint(equalToConstant: 150),
+            hostingView.widthAnchor.constraint(equalToConstant: 200),
             hostingView.heightAnchor.constraint(equalToConstant: 70)
         ])
         
@@ -132,6 +156,12 @@ class WebViewController: NSViewController {
             floatingButtonHost?.removeFromSuperview()
             floatingButtonHost = nil
         }
+    }
+    
+    @objc func adBlockerSettingsDidChange() {
+        // When ad blocker settings change, reload the current page
+        print("🔄 Ad blocker settings changed, reloading page...")
+        webView.reload()
     }
     
     // MARK: - Actions
@@ -404,6 +434,10 @@ class TitleBarView: NSView {
         titleLabel.alignment = .center
         titleLabel.lineBreakMode = .byTruncatingMiddle
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Prevent label from affecting window size
+        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         addSubview(titleLabel)
         

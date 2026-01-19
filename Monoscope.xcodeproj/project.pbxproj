@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		21BE94044A8906065804DB21 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D2392E2E66C2BA26BCBE2B9 /* Constants.swift */; };
+		25EAD80012D74BAB40462394 /* filter-rules.json in Resources */ = {isa = PBXBuildFile; fileRef = 109E53675B70E1FC20DDAF79 /* filter-rules.json */; };
 		2AAED60C037AE789B01A1164 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */; };
 		33E95910B28E5BCD823A2841 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBEE9FCD74BCCDE687EAA751 /* WelcomeView.swift */; };
 		4B2D89A27A415441EB515722 /* GlassButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8294D068F6255F282707BEF2 /* GlassButtonStyle.swift */; };
@@ -18,6 +19,7 @@
 		9F141CF64ADF1A1DFB2B4E65 /* MenuBarManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC50FBD0283E790985FD691 /* MenuBarManager.swift */; };
 		A09C000C8F5718DF413FC159 /* MiniWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80D16B7355666860D64320B /* MiniWindowController.swift */; };
 		BF43D1A5A34DDE482F408C0E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C7C158B62D4E1BECE5CAD9 /* main.swift */; };
+		C2E5B2FAB6DB22CCD0E0CE5E /* ContentBlocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8A719EB779BF1A734438C46 /* ContentBlocker.swift */; };
 		D3310A4880FD8BC4D7FBFEB1 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06161BD6110EF0D8C4FC73BA /* FloatingButton.swift */; };
 		DC96B57BEA73281D4A6CBEBC /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B6D67B3AB9399D4B3447C74 /* AboutView.swift */; };
 		E5B0001B544199C4DB2839C3 /* BrowserDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3D3490ADB56FD40A7BBB91 /* BrowserDetector.swift */; };
@@ -26,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		06161BD6110EF0D8C4FC73BA /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
+		109E53675B70E1FC20DDAF79 /* filter-rules.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "filter-rules.json"; sourceTree = "<group>"; };
 		133D05EEB8F9E7E06D9C858C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		20B38545DE8F6060F7B56D4D /* BrowserOpener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserOpener.swift; sourceTree = "<group>"; };
 		2B6D67B3AB9399D4B3447C74 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
@@ -37,6 +40,7 @@
 		87479E935EABEA82FEA09C83 /* URLRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLRouter.swift; sourceTree = "<group>"; };
 		9A3835145D6FA93ADA66940F /* Monoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Monoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E55EEA8E4F678F5896FFF27 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A8A719EB779BF1A734438C46 /* ContentBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlocker.swift; sourceTree = "<group>"; };
 		AFC50FBD0283E790985FD691 /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
 		C80D16B7355666860D64320B /* MiniWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniWindowController.swift; sourceTree = "<group>"; };
 		DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
@@ -57,9 +61,18 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		615AFDE1861482EBF9FE883D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				109E53675B70E1FC20DDAF79 /* filter-rules.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		68B90A779574F92BECDFEE17 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				A8A719EB779BF1A734438C46 /* ContentBlocker.swift */,
 				C80D16B7355666860D64320B /* MiniWindowController.swift */,
 				87479E935EABEA82FEA09C83 /* URLRouter.swift */,
 				DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */,
@@ -72,6 +85,7 @@
 			children = (
 				D4A5CFFD6A86A0360905D880 /* App */,
 				68B90A779574F92BECDFEE17 /* Core */,
+				615AFDE1861482EBF9FE883D /* Resources */,
 				FE953D48BE8F6F5E1796D537 /* Settings */,
 				084BCB8B8D4BD147A7A7973D /* UI */,
 				DEA57F83C3770D5654EBAC0B /* Utilities */,
@@ -134,6 +148,7 @@
 			buildConfigurationList = F509A3162D54850E950C98DE /* Build configuration list for PBXNativeTarget "Monoscope" */;
 			buildPhases = (
 				9D1EE95A6E98586B92C3CC2F /* Sources */,
+				937DCF0EE8B8BC139B812F5B /* Resources */,
 			);
 			buildRules = (
 			);
@@ -180,6 +195,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		937DCF0EE8B8BC139B812F5B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25EAD80012D74BAB40462394 /* filter-rules.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9D1EE95A6E98586B92C3CC2F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -190,6 +216,7 @@
 				E5B0001B544199C4DB2839C3 /* BrowserDetector.swift in Sources */,
 				7EFE318CCE95079C19E0EB53 /* BrowserOpener.swift in Sources */,
 				21BE94044A8906065804DB21 /* Constants.swift in Sources */,
+				C2E5B2FAB6DB22CCD0E0CE5E /* ContentBlocker.swift in Sources */,
 				D3310A4880FD8BC4D7FBFEB1 /* FloatingButton.swift in Sources */,
 				4B2D89A27A415441EB515722 /* GlassButtonStyle.swift in Sources */,
 				9F141CF64ADF1A1DFB2B4E65 /* MenuBarManager.swift in Sources */,

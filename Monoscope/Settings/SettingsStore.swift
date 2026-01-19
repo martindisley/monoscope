@@ -16,6 +16,7 @@ struct AppSettings: Codable {
     var escClosesWindow: Bool = true
     var alwaysOnTop: Bool = false
     var hasSeenWelcome: Bool = false
+    var enableAdBlocker: Bool = true  // Enabled by default for privacy
 }
 
 class SettingsStore: ObservableObject {
