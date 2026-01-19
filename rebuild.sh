@@ -14,7 +14,13 @@ APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData/Monoscope-*/Build/Products
 
 if [ -n "$APP_PATH" ]; then
     echo "✅ Build successful!"
+    
+    # Ad-hoc code sign the app
+    echo "🔏 Code signing..."
+    codesign --force --deep --sign - "$APP_PATH"
+    
     echo "📦 Copying to /Applications..."
+    rm -rf /Applications/Monoscope.app
     cp -R "$APP_PATH" /Applications/
     echo "✅ Installed to /Applications/Monoscope.app"
     

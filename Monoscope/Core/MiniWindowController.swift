@@ -72,6 +72,10 @@ class MiniWindowController: NSWindowController, NSWindowDelegate {
         panel.hasShadow = true
         panel.isOpaque = false
         
+        // Hide minimize and maximize buttons (keep only close button)
+        panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        panel.standardWindowButton(.zoomButton)?.isHidden = true
+        
         // Window level
         updateWindowLevel()
         

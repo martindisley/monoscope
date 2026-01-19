@@ -124,7 +124,10 @@ class WebViewController: NSViewController {
     }
     
     deinit {
+        // Remove KVO observer
         webView?.removeObserver(self, forKeyPath: "title")
+        
+        // Remove notification observers
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -350,10 +353,78 @@ extension WebViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         // Could update UI here (e.g., show page title)
+        print("✅ Page loaded successfully: \(webView.url?.absoluteString ?? "unknown")")
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         print("❌ Navigation failed: \(error.localizedDescription)")
+        showErrorPage(error: error)
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        print("❌ Provisional navigation failed: \(error.localizedDescription)")
+        showErrorPage(error: error)
+    }
+    
+    private func showErrorPage(error: Error) {
+        let errorHTML = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif;
+                    background: #1a1a1a;
+                    color: #ffffff;
+                    padding: 60px 40px;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                }
+                .container {
+                    max-width: 600px;
+                    text-align: center;
+                }
+                h1 {
+                    font-size: 48px;
+                    font-weight: 600;
+                    margin: 0 0 20px 0;
+                }
+                p {
+                    font-size: 18px;
+                    line-height: 1.6;
+                    color: #999;
+                    margin: 0 0 30px 0;
+                }
+                .error-details {
+                    background: #2a2a2a;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-top: 30px;
+                    text-align: left;
+                }
+                .error-details code {
+                    color: #ff6b6b;
+                    font-size: 14px;
+                    word-break: break-all;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Can't Open Page</h1>
+                <p>Monoscope couldn't load this page.</p>
+                <div class="error-details">
+                    <code>\(error.localizedDescription)</code>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        webView.loadHTMLString(errorHTML, baseURL: nil)
     }
 }
 
@@ -417,7 +488,6 @@ extension WebViewController: WKUIDelegate {
 
 // MARK: - Title Bar View
 
-/// A compact title bar showing the page title
 class TitleBarView: NSView {
     private var titleLabel: NSTextField!
     

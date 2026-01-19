@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FloatingButton: View {
     let action: () -> Void
+    let browserName: String?
     
     var body: some View {
         VStack {
@@ -16,7 +17,7 @@ struct FloatingButton: View {
                 Spacer()
                 
                 Button(action: action) {
-                    Label("Open", systemImage: "arrow.up.forward.app")
+                    Label(buttonTitle, systemImage: "arrow.up.forward.app")
                         .font(.system(size: 12, weight: .medium))
                 }
                 .buttonStyle(GlassButtonStyle())
@@ -26,13 +27,21 @@ struct FloatingButton: View {
             Spacer()
         }
     }
+    
+    private var buttonTitle: String {
+        if let browserName = browserName {
+            return "Open in \(browserName)"
+        } else {
+            return "Open"
+        }
+    }
 }
 
 struct FloatingButton_Previews: PreviewProvider {
     static var previews: some View {
-        FloatingButton {
+        FloatingButton(action: {
             print("Open tapped")
-        }
+        }, browserName: "Chrome")
         .frame(width: 400, height: 300)
     }
 }
