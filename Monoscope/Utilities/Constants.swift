@@ -37,4 +37,14 @@ enum Constants {
         ("Opera", "/Applications/Opera.app"),
         ("Vivaldi", "/Applications/Vivaldi.app"),
     ]
+    
+    // Glass effect styling parameters
+    enum GlassEffect {
+        static let darkTintOpacity: Double = 0.05         // Dark overlay on material (lower = more translucent)
+        static let gradientTopOpacity: Double = 0.25      // Shimmer gradient strength
+        static let borderTopOpacity: Double = 0.7         // Bright edge highlight
+        static let borderBottomOpacity: Double = 0.2      // Subtle bottom edge
+        static let shadowRadius: CGFloat = 12             // Shadow blur radius
+        static let shadowOpacity: Double = 0.5            // Shadow darkness
+    }
 }

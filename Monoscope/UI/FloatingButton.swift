@@ -18,12 +18,8 @@ struct FloatingButton: View {
                 Button(action: action) {
                     Label("Open", systemImage: "arrow.up.forward.app")
                         .font(.system(size: 12, weight: .medium))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.small)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .buttonStyle(GlassButtonStyle())
                 .padding(.top, 24)
                 .padding(.trailing, 16)
             }
@@ -32,9 +28,11 @@ struct FloatingButton: View {
     }
 }
 
-#Preview {
-    FloatingButton {
-        print("Open tapped")
+struct FloatingButton_Previews: PreviewProvider {
+    static var previews: some View {
+        FloatingButton {
+            print("Open tapped")
+        }
+        .frame(width: 400, height: 300)
     }
-    .frame(width: 400, height: 300)
 }

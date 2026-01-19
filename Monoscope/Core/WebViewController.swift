@@ -58,6 +58,7 @@ class WebViewController: NSViewController {
         addTitleBar()
         setupWebView()
         setupFloatingButton()
+        restoreZoomLevel()
         
         // Load initial URL
         if let url = initialURL {
@@ -165,6 +166,45 @@ class WebViewController: NSViewController {
         onRequestClose?()
     }
     
+    @objc func zoomIn() {
+        let currentZoom = webView.pageZoom
+        webView.pageZoom = min(currentZoom + 0.1, 3.0)  // Max 300%
+        saveZoomLevel()
+    }
+    
+    @objc func zoomOut() {
+        let currentZoom = webView.pageZoom
+        webView.pageZoom = max(currentZoom - 0.1, 0.5)  // Min 50%
+        saveZoomLevel()
+    }
+    
+    @objc func resetZoom() {
+        webView.pageZoom = 1.0
+        saveZoomLevel()
+    }
+    
+    // MARK: - Zoom Level Persistence
+    
+    private func restoreZoomLevel() {
+        let defaults = UserDefaults.standard
+        if let zoomValue = defaults.value(forKey: "MonoscopeZoomLevel") as? CGFloat,
+           zoomValue >= 0.5 && zoomValue <= 3.0 { // Sanity check
+            webView.pageZoom = zoomValue
+            print("🔍 Restored zoom level: \(Int(zoomValue * 100))%")
+        } else {
+            print("🔍 Using default zoom level: 100%")
+        }
+    }
+    
+    private func saveZoomLevel() {
+        let zoomValue = webView.pageZoom
+        if zoomValue >= 0.5 && zoomValue <= 3.0 { // Sanity check
+            let defaults = UserDefaults.standard
+            defaults.set(zoomValue, forKey: "MonoscopeZoomLevel")
+            print("💾 Saved zoom level: \(Int(zoomValue * 100))%")
+        }
+    }
+    
     // MARK: - Keyboard Handling
     
     override func keyDown(with event: NSEvent) {
@@ -187,6 +227,27 @@ class WebViewController: NSViewController {
                 return
             case "]":
                 goForward()
+                return
+            case "+", "=":  // Cmd++ or Cmd+=
+                zoomIn()
+                return
+            case "-", "_":  // Cmd+- or Cmd+_
+                zoomOut()
+                return
+            case "0":  // Cmd+0
+                resetZoom()
+                return
+            case "c":  // Cmd+C (copy)
+                NSApp.sendAction(#selector(NSText.copy(_:)), to: nil, from: self)
+                return
+            case "x":  // Cmd+X (cut)
+                NSApp.sendAction(#selector(NSText.cut(_:)), to: nil, from: self)
+                return
+            case "v":  // Cmd+V (paste)
+                NSApp.sendAction(#selector(NSText.paste(_:)), to: nil, from: self)
+                return
+            case "a":  // Cmd+A (select all)
+                NSApp.sendAction(#selector(NSText.selectAll(_:)), to: nil, from: self)
                 return
             default:
                 break
