@@ -108,7 +108,7 @@ Monoscope/
 
 ## 🧪 Testing
 
-See [TESTING.md](TESTING.md) for the complete manual test checklist.
+See [TESTING.md](TESTING.md) for the manual test checklist.
 
 ### Quick Smoke Test
 
@@ -167,11 +167,12 @@ NSWorkspace.shared.open([url],
 - [x] Settings persistence
 - [x] Welcome screen
 - [x] Menu bar integration
+- [x] Native ad blocking (standard + strict mode)
 
 ### 🎯 Future Enhancements (v2.0+)
+- [x] Native ad blocking with optional strict mode
 - [ ] Per-domain window size memory
 - [ ] Custom URL routing rules
-- [ ] Content blocking
 - [ ] Dark mode forcing
 - [ ] Picture-in-Picture support
 - [ ] Browser profiles/containers
