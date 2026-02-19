@@ -12,6 +12,7 @@
 		2AAED60C037AE789B01A1164 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD9EFC6DD2EEE59B7A220AA4 /* WebViewController.swift */; };
 		33E95910B28E5BCD823A2841 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBEE9FCD74BCCDE687EAA751 /* WelcomeView.swift */; };
 		4B2D89A27A415441EB515722 /* GlassButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8294D068F6255F282707BEF2 /* GlassButtonStyle.swift */; };
+		4D36DF2BA9F338534FC97C51 /* filter-rules-strict.json in Resources */ = {isa = PBXBuildFile; fileRef = A1A8B31B7FB0FECF84178611 /* filter-rules-strict.json */; };
 		6ACC6124656ED774B62D6B37 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 133D05EEB8F9E7E06D9C858C /* SettingsStore.swift */; };
 		76D22F9DE8D6A50BB55BB53E /* URLRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87479E935EABEA82FEA09C83 /* URLRouter.swift */; };
 		7EFE318CCE95079C19E0EB53 /* BrowserOpener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B38545DE8F6060F7B56D4D /* BrowserOpener.swift */; };
@@ -40,6 +41,7 @@
 		87479E935EABEA82FEA09C83 /* URLRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLRouter.swift; sourceTree = "<group>"; };
 		9A3835145D6FA93ADA66940F /* Monoscope.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Monoscope.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9E55EEA8E4F678F5896FFF27 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		A1A8B31B7FB0FECF84178611 /* filter-rules-strict.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "filter-rules-strict.json"; sourceTree = "<group>"; };
 		A8A719EB779BF1A734438C46 /* ContentBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentBlocker.swift; sourceTree = "<group>"; };
 		AFC50FBD0283E790985FD691 /* MenuBarManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarManager.swift; sourceTree = "<group>"; };
 		C80D16B7355666860D64320B /* MiniWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniWindowController.swift; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 		615AFDE1861482EBF9FE883D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A1A8B31B7FB0FECF84178611 /* filter-rules-strict.json */,
 				109E53675B70E1FC20DDAF79 /* filter-rules.json */,
 			);
 			path = Resources;
@@ -200,6 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D36DF2BA9F338534FC97C51 /* filter-rules-strict.json in Resources */,
 				25EAD80012D74BAB40462394 /* filter-rules.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

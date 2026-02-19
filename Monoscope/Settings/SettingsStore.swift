@@ -17,6 +17,7 @@ struct AppSettings: Codable {
     var alwaysOnTop: Bool = false
     var hasSeenWelcome: Bool = false
     var enableAdBlocker: Bool = true  // Enabled by default for privacy
+    var strictAdBlocking: Bool = false  // Block APM, chat widgets, feature flags (off by default)
 }
 
 class SettingsStore: ObservableObject {

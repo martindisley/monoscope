@@ -58,6 +58,10 @@ struct SettingsView: View {
             Section("Privacy & Content Blocking") {
                 Toggle("Block ads and trackers", isOn: $store.settings.enableAdBlocker)
                     .help("Block advertisements, analytics, and tracking scripts for faster, privacy-focused browsing")
+                
+                Toggle("Strict mode (block chat widgets, APM, feature flags)", isOn: $store.settings.strictAdBlocking)
+                    .help("Also block support chat widgets (Intercom, Zendesk), application monitoring (NewRelic, Sentry), and A/B testing services. May break some site functionality.")
+                    .disabled(!store.settings.enableAdBlocker)
             }
             
             Section {
@@ -94,6 +98,9 @@ struct SettingsView: View {
             notifyWindowsToUpdateWindowLevel()
         }
         .onChange(of: store.settings.enableAdBlocker) { _ in
+            notifyWindowsToReload()
+        }
+        .onChange(of: store.settings.strictAdBlocking) { _ in
             notifyWindowsToReload()
         }
     }

@@ -28,7 +28,9 @@ enum Constants {
     // Ad Blocker
     enum AdBlocker {
         static let ruleListIdentifier = "MonoscopeAdBlocker"
+        static let strictRuleListIdentifier = "MonoscopeAdBlockerStrict"
         static let filterRulesFilename = "filter-rules"
+        static let filterRulesStrictFilename = "filter-rules-strict"
         static let filterRulesExtension = "json"
     }
     

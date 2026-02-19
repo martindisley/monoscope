@@ -170,9 +170,30 @@ class WebViewController: NSViewController {
     }
     
     @objc func adBlockerSettingsDidChange() {
-        // When ad blocker settings change, reload the current page
-        print("🔄 Ad blocker settings changed, reloading page...")
-        webView.reload()
+        // Content rules are baked into WKWebViewConfiguration at creation time,
+        // so we need to recreate the webview to apply/remove them
+        print("🔄 Ad blocker settings changed, recreating webview...")
+        recreateWebView()
+    }
+    
+    private func recreateWebView() {
+        // Save current URL to restore after recreation
+        let currentURL = webView.url
+        
+        // Remove old webview
+        webView.removeObserver(self, forKeyPath: "title")
+        webView.removeFromSuperview()
+        webView = nil
+        
+        // Remove floating button (will be recreated with new webview)
+        floatingButtonHost?.removeFromSuperview()
+        floatingButtonHost = nil
+        
+        // Set initialURL to current page so it loads after recreation
+        initialURL = currentURL
+        
+        // Recreate webview with new configuration
+        setupWebView()
     }
     
     // MARK: - Actions
