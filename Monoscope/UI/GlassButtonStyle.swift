@@ -16,11 +16,12 @@ struct GlassButtonStyle: ButtonStyle {
             .padding(.vertical, 10)     // Adjusted for better proportions
             .background(
                 ZStack {
-                    // Layer 1: Base blur material
+                    // Layer 1: Base blur material with transparency
                     Capsule()
                         .fill(.ultraThinMaterial)
+                        .opacity(0.6)  // Make the material itself more transparent
                     
-                    // Layer 2: Dark tint overlay
+                    // Layer 2: Very subtle dark tint overlay
                     Capsule()
                         .fill(Color.black.opacity(Constants.GlassEffect.darkTintOpacity))
                     

@@ -25,6 +25,15 @@ enum Constants {
         static let settings = "appSettings"
     }
     
+    // Ad Blocker
+    enum AdBlocker {
+        static let ruleListIdentifier = "MonoscopeAdBlocker"
+        static let strictRuleListIdentifier = "MonoscopeAdBlockerStrict"
+        static let filterRulesFilename = "filter-rules"
+        static let filterRulesStrictFilename = "filter-rules-strict"
+        static let filterRulesExtension = "json"
+    }
+    
     // Common browsers
     static let commonBrowsers: [(name: String, path: String)] = [
         ("Safari", "/Applications/Safari.app"),
@@ -40,11 +49,11 @@ enum Constants {
     
     // Glass effect styling parameters
     enum GlassEffect {
-        static let darkTintOpacity: Double = 0.05         // Dark overlay on material (lower = more translucent)
-        static let gradientTopOpacity: Double = 0.25      // Shimmer gradient strength
-        static let borderTopOpacity: Double = 0.7         // Bright edge highlight
-        static let borderBottomOpacity: Double = 0.2      // Subtle bottom edge
+        static let darkTintOpacity: Double = 0.02         // Dark overlay on material (lower = more translucent)
+        static let gradientTopOpacity: Double = 0.15      // Shimmer gradient strength
+        static let borderTopOpacity: Double = 0.5         // Bright edge highlight
+        static let borderBottomOpacity: Double = 0.15     // Subtle bottom edge
         static let shadowRadius: CGFloat = 12             // Shadow blur radius
-        static let shadowOpacity: Double = 0.5            // Shadow darkness
+        static let shadowOpacity: Double = 0.3            // Shadow darkness
     }
 }

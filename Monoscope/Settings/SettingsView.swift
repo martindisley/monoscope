@@ -55,6 +55,15 @@ struct SettingsView: View {
                     .help("Press Escape to quickly close the current window")
             }
             
+            Section("Privacy & Content Blocking") {
+                Toggle("Block ads and trackers", isOn: $store.settings.enableAdBlocker)
+                    .help("Block advertisements, analytics, and tracking scripts for faster, privacy-focused browsing")
+                
+                Toggle("Strict mode (block chat widgets, APM, feature flags)", isOn: $store.settings.strictAdBlocking)
+                    .help("Also block support chat widgets (Intercom, Zendesk), application monitoring (NewRelic, Sentry), and A/B testing services. May break some site functionality.")
+                    .disabled(!store.settings.enableAdBlocker)
+            }
+            
             Section {
                 HStack {
                     Spacer()
@@ -66,15 +75,20 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 550, height: 450)
+        .frame(width: 550, height: 500)
         .onAppear {
             loadBrowsers()
         }
         .onChange(of: selectedBrowser) { newValue in
             if let path = newValue {
                 store.settings.mainBrowserAppURL = URL(fileURLWithPath: path)
+                // Find the browser name from the browsers list
+                if let browser = browsers.first(where: { $0.appURL.path == path }) {
+                    store.settings.mainBrowserName = browser.name
+                }
             } else {
                 store.settings.mainBrowserAppURL = nil
+                store.settings.mainBrowserName = nil
             }
         }
         .onChange(of: store.settings.showFloatingButton) { _ in
@@ -82,6 +96,12 @@ struct SettingsView: View {
         }
         .onChange(of: store.settings.alwaysOnTop) { _ in
             notifyWindowsToUpdateWindowLevel()
+        }
+        .onChange(of: store.settings.enableAdBlocker) { _ in
+            notifyWindowsToReload()
+        }
+        .onChange(of: store.settings.strictAdBlocking) { _ in
+            notifyWindowsToReload()
         }
     }
     
@@ -98,6 +118,11 @@ struct SettingsView: View {
     private func notifyWindowsToUpdateWindowLevel() {
         NotificationCenter.default.post(name: .windowLevelDidChange, object: nil)
     }
+    
+    private func notifyWindowsToReload() {
+        // Post notification to reload all windows with new ad blocker settings
+        NotificationCenter.default.post(name: .adBlockerSettingsDidChange, object: nil)
+    }
 }
 
 // MARK: - Notifications
@@ -105,6 +130,7 @@ struct SettingsView: View {
 extension Notification.Name {
     static let settingsDidChange = Notification.Name("settingsDidChange")
     static let windowLevelDidChange = Notification.Name("windowLevelDidChange")
+    static let adBlockerSettingsDidChange = Notification.Name("adBlockerSettingsDidChange")
 }
 
 #Preview {

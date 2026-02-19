@@ -57,13 +57,14 @@ class WebViewController: NSViewController {
         
         addTitleBar()
         setupWebView()
-        setupFloatingButton()
-        restoreZoomLevel()
         
-        // Load initial URL
-        if let url = initialURL {
-            webView.load(URLRequest(url: url))
-        }
+        // Listen for ad blocker setting changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adBlockerSettingsDidChange),
+            name: .adBlockerSettingsDidChange,
+            object: nil
+        )
     }
     
     private func setupWebView() {
@@ -71,6 +72,26 @@ class WebViewController: NSViewController {
         let config = WKWebViewConfiguration()
         config.websiteDataStore = .default() // Persistent cookies/storage
         
+        // Apply ad blocker if enabled
+        if SettingsStore.shared.settings.enableAdBlocker {
+            print("🛡️ Ad blocker enabled, applying content rules...")
+            ContentBlocker.shared.applyRules(to: config) { [weak self] success in
+                if success {
+                    print("✅ Ad blocker active")
+                } else {
+                    print("⚠️ Ad blocker failed to initialize")
+                }
+                // Create webview after rules are applied (or failed)
+                self?.createWebView(with: config)
+            }
+        } else {
+            print("🔓 Ad blocker disabled")
+            // Create webview immediately if ad blocker is disabled
+            createWebView(with: config)
+        }
+    }
+    
+    private func createWebView(with config: WKWebViewConfiguration) {
         // Create webview - leave room for title bar at top
         var webViewFrame = view.bounds
         webViewFrame.size.height -= Constants.titleBarHeight
@@ -85,6 +106,15 @@ class WebViewController: NSViewController {
         
         // Update title when page loads
         webView.addObserver(self, forKeyPath: "title", options: .new, context: nil)
+        
+        // Now that webView exists, restore zoom and setup floating button
+        restoreZoomLevel()
+        setupFloatingButton()
+        
+        // Load initial URL if we have one
+        if let url = initialURL {
+            webView.load(URLRequest(url: url))
+        }
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -94,7 +124,11 @@ class WebViewController: NSViewController {
     }
     
     deinit {
+        // Remove KVO observer
         webView?.removeObserver(self, forKeyPath: "title")
+        
+        // Remove notification observers
+        NotificationCenter.default.removeObserver(self)
     }
     
     private func setupFloatingButton() {
@@ -103,9 +137,10 @@ class WebViewController: NSViewController {
             return
         }
         
-        let button = FloatingButton { [weak self] in
+        let browserName = SettingsStore.shared.settings.mainBrowserName
+        let button = FloatingButton(action: { [weak self] in
             self?.openInMainBrowser()
-        }
+        }, browserName: browserName)
         
         let hostingView = NSHostingView(rootView: button)
         hostingView.translatesAutoresizingMaskIntoConstraints = false
@@ -116,7 +151,7 @@ class WebViewController: NSViewController {
         NSLayoutConstraint.activate([
             hostingView.topAnchor.constraint(equalTo: view.topAnchor),
             hostingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            hostingView.widthAnchor.constraint(equalToConstant: 150),
+            hostingView.widthAnchor.constraint(equalToConstant: 200),
             hostingView.heightAnchor.constraint(equalToConstant: 70)
         ])
         
@@ -132,6 +167,33 @@ class WebViewController: NSViewController {
             floatingButtonHost?.removeFromSuperview()
             floatingButtonHost = nil
         }
+    }
+    
+    @objc func adBlockerSettingsDidChange() {
+        // Content rules are baked into WKWebViewConfiguration at creation time,
+        // so we need to recreate the webview to apply/remove them
+        print("🔄 Ad blocker settings changed, recreating webview...")
+        recreateWebView()
+    }
+    
+    private func recreateWebView() {
+        // Save current URL to restore after recreation
+        let currentURL = webView.url
+        
+        // Remove old webview
+        webView.removeObserver(self, forKeyPath: "title")
+        webView.removeFromSuperview()
+        webView = nil
+        
+        // Remove floating button (will be recreated with new webview)
+        floatingButtonHost?.removeFromSuperview()
+        floatingButtonHost = nil
+        
+        // Set initialURL to current page so it loads after recreation
+        initialURL = currentURL
+        
+        // Recreate webview with new configuration
+        setupWebView()
     }
     
     // MARK: - Actions
@@ -312,10 +374,93 @@ extension WebViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         // Could update UI here (e.g., show page title)
+        print("✅ Page loaded successfully: \(webView.url?.absoluteString ?? "unknown")")
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        // Don't show error page for cancelled navigations (error -999)
+        // This happens when navigating away before a page finishes loading
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            print("⏭️ Navigation cancelled (normal behavior)")
+            return
+        }
+        
         print("❌ Navigation failed: \(error.localizedDescription)")
+        showErrorPage(error: error)
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        // Don't show error page for cancelled navigations (error -999)
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled {
+            print("⏭️ Provisional navigation cancelled (normal behavior)")
+            return
+        }
+        
+        print("❌ Provisional navigation failed: \(error.localizedDescription)")
+        showErrorPage(error: error)
+    }
+    
+    private func showErrorPage(error: Error) {
+        let errorHTML = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro', sans-serif;
+                    background: #1a1a1a;
+                    color: #ffffff;
+                    padding: 60px 40px;
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 100vh;
+                }
+                .container {
+                    max-width: 600px;
+                    text-align: center;
+                }
+                h1 {
+                    font-size: 48px;
+                    font-weight: 600;
+                    margin: 0 0 20px 0;
+                }
+                p {
+                    font-size: 18px;
+                    line-height: 1.6;
+                    color: #999;
+                    margin: 0 0 30px 0;
+                }
+                .error-details {
+                    background: #2a2a2a;
+                    border-radius: 12px;
+                    padding: 20px;
+                    margin-top: 30px;
+                    text-align: left;
+                }
+                .error-details code {
+                    color: #ff6b6b;
+                    font-size: 14px;
+                    word-break: break-all;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Can't Open Page</h1>
+                <p>Monoscope couldn't load this page.</p>
+                <div class="error-details">
+                    <code>\(error.localizedDescription)</code>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        webView.loadHTMLString(errorHTML, baseURL: nil)
     }
 }
 
@@ -379,7 +524,6 @@ extension WebViewController: WKUIDelegate {
 
 // MARK: - Title Bar View
 
-/// A compact title bar showing the page title
 class TitleBarView: NSView {
     private var titleLabel: NSTextField!
     
@@ -404,6 +548,10 @@ class TitleBarView: NSView {
         titleLabel.alignment = .center
         titleLabel.lineBreakMode = .byTruncatingMiddle
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Prevent label from affecting window size
+        titleLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         addSubview(titleLabel)
         
