@@ -198,6 +198,16 @@ class WebViewController: NSViewController {
     
     // MARK: - Actions
     
+    @objc func copyCurrentURL() {
+        guard let currentURL = webView.url else { return }
+        
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(currentURL.absoluteString, forType: .string)
+        
+        print("📋 Copied URL to clipboard: \(currentURL.absoluteString)")
+    }
+    
     @objc func openInMainBrowser() {
         guard let currentURL = webView.url else { return }
         
@@ -272,6 +282,17 @@ class WebViewController: NSViewController {
     override func keyDown(with event: NSEvent) {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         
+        // Shift+Command key combinations
+        if flags == [.shift, .command] {
+            switch event.charactersIgnoringModifiers?.lowercased() {
+            case "c":  // Shift+Cmd+C (copy current URL)
+                copyCurrentURL()
+                return
+            default:
+                break
+            }
+        }
+        
         // Command key combinations
         if flags == .command {
             switch event.charactersIgnoringModifiers {
@@ -299,7 +320,7 @@ class WebViewController: NSViewController {
             case "0":  // Cmd+0
                 resetZoom()
                 return
-            case "c":  // Cmd+C (copy)
+            case "c":  // Cmd+C (copy selected text)
                 NSApp.sendAction(#selector(NSText.copy(_:)), to: nil, from: self)
                 return
             case "x":  // Cmd+X (cut)

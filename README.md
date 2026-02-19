@@ -56,6 +56,7 @@ Now when you click links in Mail, Messages, Slack, or any other app, they'll ope
 | Shortcut | Action |
 |----------|--------|
 | `Cmd+O` | Open current page in main browser |
+| `Shift+Cmd+C` | Copy current URL to clipboard |
 | `Cmd+W` | Close window |
 | `Cmd+R` | Reload page |
 | `Cmd+[` | Go back |
