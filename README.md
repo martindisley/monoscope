@@ -2,7 +2,7 @@
 
 A minimal macOS browser designed as a quick preview layer before opening links in your main browser.
 
-## ✨ Features
+## Features
 
 - **Frameless floating windows** – Distraction-free web content viewing
 - **Keyboard-first workflow** – Press `Cmd+O` to open the current page in your main browser
@@ -11,7 +11,7 @@ A minimal macOS browser designed as a quick preview layer before opening links i
 - **Privacy-focused** – No telemetry, no URL logging
 - **Smart navigation** – Links open in the same window, external clicks create new windows
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Requirements
 
@@ -42,7 +42,7 @@ xcodebuild -project Monoscope.xcodeproj -scheme Monoscope -configuration Release
 4. Launch Monoscope
 5. Follow the welcome screen instructions
 
-## 🎯 Setting as Default Browser
+## Setting as Default Browser
 
 1. Open **System Settings**
 2. Navigate to **Desktop & Dock**
@@ -63,7 +63,7 @@ Now when you click links in Mail, Messages, Slack, or any other app, they'll ope
 | `Cmd+]` | Go forward |
 | `Esc` | Close window (configurable) |
 
-## ⚙️ Settings
+## Settings
 
 Access settings via the menu bar icon (network symbol).
 
@@ -80,7 +80,7 @@ Choose which browser to use when you press `Cmd+O`:
 - **Close after open** – Auto-close window after sending to main browser
 - **Esc closes window** – Enable/disable Escape key shortcut
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 Monoscope/
@@ -107,7 +107,7 @@ Monoscope/
     └── Constants.swift            # App constants
 ```
 
-## 🧪 Testing
+## Testing
 
 See [TESTING.md](TESTING.md) for the manual test checklist.
 
@@ -120,7 +120,7 @@ See [TESTING.md](TESTING.md) for the manual test checklist.
 5. Test `mailto:` link → should open Mail app
 6. Open Settings → change preferences
 
-## 🔧 Development
+## Development
 
 ### Code Structure
 
@@ -153,56 +153,3 @@ NSWorkspace.shared.open([url],
 #### External vs Internal Navigation
 - External: URLs from `application(_:open:)` → new window
 - Internal: WKNavigationDelegate → same window
-
-## 📋 Project Status
-
-### ✅ Completed Features (v1.0)
-- [x] Register as default browser
-- [x] External links create new windows
-- [x] Internal navigation stays in same window
-- [x] Frameless, minimal UI
-- [x] Floating Open button (toggleable)
-- [x] All keyboard shortcuts
-- [x] Open in user-selected browser
-- [x] Non-HTTP scheme forwarding
-- [x] Settings persistence
-- [x] Welcome screen
-- [x] Menu bar integration
-- [x] Native ad blocking (standard + strict mode)
-
-### 🎯 Future Enhancements (v2.0+)
-- [x] Native ad blocking with optional strict mode
-- [ ] Per-domain window size memory
-- [ ] Custom URL routing rules
-- [ ] Dark mode forcing
-- [ ] Picture-in-Picture support
-- [ ] Browser profiles/containers
-
-## 🐛 Known Issues
-
-None currently! Report issues by opening a GitHub issue.
-
-## 📄 License
-
-[Specify your license here]
-
-## 🤝 Contributing
-
-Contributions welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly using TESTING.md
-5. Submit a pull request
-
-## 💬 Support
-
-- GitHub Issues: Report bugs or request features
-- Documentation: See inline code comments for technical details
-
----
-
-**Made with ❤️ for focused browsing**
-
-*Monoscope – A single lens for quick web previews*
