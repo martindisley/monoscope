@@ -53,6 +53,9 @@ struct SettingsView: View {
                 
                 Toggle("Esc key closes window", isOn: $store.settings.escClosesWindow)
                     .help("Press Escape to quickly close the current window")
+
+                Toggle("Open windows without switching Spaces", isOn: $store.settings.nonActivatingWindows)
+                    .help("Prevents Monoscope from taking focus; you may need to click the window before typing or using keyboard shortcuts")
             }
             
             Section("Privacy & Content Blocking") {
@@ -75,7 +78,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 550, height: 500)
+        .frame(width: 550, height: 580)
         .onAppear {
             loadBrowsers()
         }
@@ -96,6 +99,9 @@ struct SettingsView: View {
         }
         .onChange(of: store.settings.alwaysOnTop) { _ in
             notifyWindowsToUpdateWindowLevel()
+        }
+        .onChange(of: store.settings.nonActivatingWindows) { _ in
+            notifyWindowsToUpdateActivationBehavior()
         }
         .onChange(of: store.settings.enableAdBlocker) { _ in
             notifyWindowsToReload()
@@ -123,6 +129,10 @@ struct SettingsView: View {
         // Post notification to reload all windows with new ad blocker settings
         NotificationCenter.default.post(name: .adBlockerSettingsDidChange, object: nil)
     }
+
+    private func notifyWindowsToUpdateActivationBehavior() {
+        NotificationCenter.default.post(name: .windowActivationDidChange, object: nil)
+    }
 }
 
 // MARK: - Notifications
@@ -130,6 +140,7 @@ struct SettingsView: View {
 extension Notification.Name {
     static let settingsDidChange = Notification.Name("settingsDidChange")
     static let windowLevelDidChange = Notification.Name("windowLevelDidChange")
+    static let windowActivationDidChange = Notification.Name("windowActivationDidChange")
     static let adBlockerSettingsDidChange = Notification.Name("adBlockerSettingsDidChange")
 }
 

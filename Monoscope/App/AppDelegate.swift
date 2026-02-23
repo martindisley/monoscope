@@ -19,6 +19,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         print("🚀 Monoscope launching...")
+
+        // Keep Monoscope out of the Dock and avoid app activation
+        NSApp.setActivationPolicy(.accessory)
         
         // Initialize URL router
         urlRouter = URLRouter()
@@ -123,6 +126,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] _ in
             self?.updateAllWindowLevels()
         }
+
+        NotificationCenter.default.addObserver(
+            forName: .windowActivationDidChange,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateAllWindowActivationBehavior()
+        }
     }
     
     private func updateAllWindowsUI() {
@@ -134,6 +145,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateAllWindowLevels() {
         for windowController in openWindows {
             windowController.updateWindowLevel()
+        }
+    }
+
+    private func updateAllWindowActivationBehavior() {
+        for windowController in openWindows {
+            windowController.updateActivationBehavior()
         }
     }
 }

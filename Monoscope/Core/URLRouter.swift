@@ -38,9 +38,14 @@ class URLRouter {
         // Register with app delegate for tracking
         appDelegate?.registerWindow(windowController)
         
-        // Show window
+        // Show window with optional activation behavior
         windowController.showWindow(nil)
-        windowController.window?.makeKeyAndOrderFront(nil)
+        if SettingsStore.shared.settings.nonActivatingWindows {
+            windowController.window?.orderFrontRegardless()
+        } else {
+            windowController.window?.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
         
         // Debug: Print window frame
         if let window = windowController.window {

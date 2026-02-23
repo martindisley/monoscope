@@ -7,6 +7,11 @@
 
 import Cocoa
 
+final class NonActivatingPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { false }
+}
+
 class MiniWindowController: NSWindowController, NSWindowDelegate {
     
     private var webViewController: WebViewController!
@@ -14,14 +19,19 @@ class MiniWindowController: NSWindowController, NSWindowDelegate {
     
     convenience init(url: URL) {
         // Create the frameless panel with default size
-        let panel = NSPanel(
+        let usesNonActivatingWindows = SettingsStore.shared.settings.nonActivatingWindows
+        var styleMask: NSWindow.StyleMask = [.titled, .closable, .resizable, .fullSizeContentView]
+        if usesNonActivatingWindows {
+            styleMask.insert(.nonactivatingPanel)
+        }
+        let panel = NonActivatingPanel(
             contentRect: NSRect(
                 x: 0,
                 y: 0,
                 width: Constants.defaultWindowWidth,
                 height: Constants.defaultWindowHeight
             ),
-            styleMask: [.titled, .closable, .resizable, .fullSizeContentView],
+            styleMask: styleMask,
             backing: .buffered,
             defer: false
         )
@@ -76,15 +86,17 @@ class MiniWindowController: NSWindowController, NSWindowDelegate {
         panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
         panel.standardWindowButton(.zoomButton)?.isHidden = true
         
-        // Window level
+        // Window level and space behavior
         updateWindowLevel()
+
+        // Activation behavior
+        updateActivationBehavior()
         
         // Make sure window accepts key events
         panel.isFloatingPanel = false
         panel.hidesOnDeactivate = false
         
-        // Standard window behavior
-        panel.collectionBehavior = [.managed, .participatesInCycle]
+        // Standard window behavior (specifics set in updateWindowLevel)
     }
     
     private func centerWindowOnActiveScreen(_ window: NSWindow) {
@@ -113,11 +125,25 @@ class MiniWindowController: NSWindowController, NSWindowDelegate {
     
     func updateWindowLevel() {
         guard let window = window else { return }
+        let baseBehavior: NSWindow.CollectionBehavior = [.managed, .participatesInCycle, .moveToActiveSpace]
         
         if SettingsStore.shared.settings.alwaysOnTop {
             window.level = .floating
+            window.collectionBehavior = baseBehavior.union([.canJoinAllSpaces, .fullScreenAuxiliary])
         } else {
             window.level = .normal
+            window.collectionBehavior = baseBehavior
+        }
+    }
+
+    func updateActivationBehavior() {
+        guard let panel = window as? NSPanel else { return }
+
+        if SettingsStore.shared.settings.nonActivatingWindows {
+            panel.styleMask.insert(.nonactivatingPanel)
+            panel.hidesOnDeactivate = false
+        } else {
+            panel.styleMask.remove(.nonactivatingPanel)
         }
     }
     
