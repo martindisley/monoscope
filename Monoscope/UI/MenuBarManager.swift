@@ -7,12 +7,17 @@
 
 import Cocoa
 import SwiftUI
+import WebKit
 
 class MenuBarManager: NSObject {
     
     private var statusItem: NSStatusItem?
     private var settingsWindow: NSWindow?
     private var aboutWindow: NSWindow?
+    private var clearSiteMenuItem: NSMenuItem?
+    private var historyMenuItem: NSMenuItem?
+    private let historyMenu = NSMenu()
+    private var lastVisitedHost: String?
     
     weak var appDelegate: AppDelegate?
     
@@ -33,6 +38,7 @@ class MenuBarManager: NSObject {
         
         // Create menu
         let menu = NSMenu()
+        menu.delegate = self
         
         menu.addItem(
             NSMenuItem(
@@ -46,6 +52,27 @@ class MenuBarManager: NSObject {
             NSMenuItem(
                 title: "About Monoscope",
                 action: #selector(openAbout),
+                keyEquivalent: ""
+            )
+        )
+
+        let historyItem = NSMenuItem(title: "History", action: nil, keyEquivalent: "")
+        historyItem.submenu = historyMenu
+        menu.addItem(historyItem)
+        historyMenuItem = historyItem
+
+        let clearSiteItem = NSMenuItem(
+            title: "Clear Data for This Site",
+            action: #selector(clearWebsiteDataForCurrentSite),
+            keyEquivalent: ""
+        )
+        menu.addItem(clearSiteItem)
+        clearSiteMenuItem = clearSiteItem
+
+        menu.addItem(
+            NSMenuItem(
+                title: "Clear All Browser Data",
+                action: #selector(clearWebsiteData),
                 keyEquivalent: ""
             )
         )
@@ -66,6 +93,13 @@ class MenuBarManager: NSObject {
         }
         
         statusItem?.menu = menu
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(currentURLDidChange(_:)),
+            name: .currentURLDidChange,
+            object: nil
+        )
         
         print("✅ Menu bar setup complete")
     }
@@ -107,5 +141,89 @@ class MenuBarManager: NSObject {
         
         aboutWindow = window
         window.makeKeyAndOrderFront(nil)
+    }
+
+    @objc func currentURLDidChange(_ notification: Notification) {
+        guard let url = notification.object as? URL else {
+            lastVisitedHost = nil
+            return
+        }
+        lastVisitedHost = url.host
+    }
+
+    @objc func clearWebsiteData() {
+        let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+
+        WKWebsiteDataStore.default().removeData(ofTypes: dataTypes, modifiedSince: .distantPast) {
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .websiteDataDidClear, object: nil)
+                print("🗑️ Cleared website data")
+            }
+        }
+    }
+
+    @objc func clearWebsiteDataForCurrentSite() {
+        guard let host = lastVisitedHost, !host.isEmpty else {
+            NSSound.beep()
+            return
+        }
+
+        let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: dataTypes) { records in
+            let matchingRecords = records.filter { record in
+                record.displayName == host || record.displayName.hasSuffix(".\(host)")
+            }
+
+            WKWebsiteDataStore.default().removeData(ofTypes: dataTypes, for: matchingRecords) {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .websiteDataDidClear, object: nil)
+                    print("🗑️ Cleared website data for \(host)")
+                }
+            }
+        }
+    }
+
+    @objc func openHistoryEntry(_ sender: NSMenuItem) {
+        guard let urlString = sender.representedObject as? String,
+              let url = URL(string: urlString) else {
+            return
+        }
+        appDelegate?.openURLInMonoscope(url)
+    }
+
+    @objc func clearHistory() {
+        HistoryStore.shared.clear()
+        rebuildHistoryMenu()
+    }
+
+    private func rebuildHistoryMenu() {
+        historyMenu.removeAllItems()
+
+        let entries = HistoryStore.shared.entries(limitToMenu: true)
+        if entries.isEmpty {
+            let item = NSMenuItem(title: "No history yet", action: nil, keyEquivalent: "")
+            item.isEnabled = false
+            historyMenu.addItem(item)
+            return
+        }
+
+        for entry in entries {
+            let item = NSMenuItem(title: entry.displayTitle, action: #selector(openHistoryEntry(_:)), keyEquivalent: "")
+            item.representedObject = entry.urlString
+            item.target = self
+            historyMenu.addItem(item)
+        }
+
+        historyMenu.addItem(NSMenuItem.separator())
+        let clearItem = NSMenuItem(title: "Clear History", action: #selector(clearHistory), keyEquivalent: "")
+        clearItem.target = self
+        historyMenu.addItem(clearItem)
+    }
+}
+
+extension MenuBarManager: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        rebuildHistoryMenu()
+        clearSiteMenuItem?.isEnabled = (lastVisitedHost != nil)
     }
 }

@@ -142,6 +142,8 @@ extension Notification.Name {
     static let windowLevelDidChange = Notification.Name("windowLevelDidChange")
     static let windowActivationDidChange = Notification.Name("windowActivationDidChange")
     static let adBlockerSettingsDidChange = Notification.Name("adBlockerSettingsDidChange")
+    static let websiteDataDidClear = Notification.Name("websiteDataDidClear")
+    static let currentURLDidChange = Notification.Name("currentURLDidChange")
 }
 
 #Preview {

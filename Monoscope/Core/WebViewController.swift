@@ -65,6 +65,13 @@ class WebViewController: NSViewController {
             name: .adBlockerSettingsDidChange,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(websiteDataDidClear),
+            name: .websiteDataDidClear,
+            object: nil
+        )
     }
     
     private func setupWebView() {
@@ -174,6 +181,10 @@ class WebViewController: NSViewController {
         // so we need to recreate the webview to apply/remove them
         print("🔄 Ad blocker settings changed, recreating webview...")
         recreateWebView()
+    }
+
+    @objc func websiteDataDidClear() {
+        webView?.reloadFromOrigin()
     }
     
     private func recreateWebView() {
@@ -395,7 +406,13 @@ extension WebViewController: WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         // Could update UI here (e.g., show page title)
-        print("✅ Page loaded successfully: \(webView.url?.absoluteString ?? "unknown")")
+        if let url = webView.url {
+            NotificationCenter.default.post(name: .currentURLDidChange, object: url)
+            HistoryStore.shared.add(url: url, title: webView.title)
+            print("✅ Page loaded successfully: \(url.absoluteString)")
+        } else {
+            print("✅ Page loaded successfully: unknown")
+        }
     }
     
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {

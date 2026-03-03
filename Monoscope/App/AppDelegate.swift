@@ -75,6 +75,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             pendingURLs.append(contentsOf: urls)
         }
     }
+
+    func openURLInMonoscope(_ url: URL) {
+        urlRouter.openInNewWindow(url)
+    }
     
     // MARK: - Window Management
     
