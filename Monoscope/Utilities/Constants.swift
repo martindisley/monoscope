@@ -13,6 +13,7 @@ enum Constants {
     static let defaultWindowWidth: CGFloat = 1400
     static let defaultWindowHeight: CGFloat = 900
     static let titleBarHeight: CGFloat = 32  // Compact title bar
+    static let windowOffsetStep: CGFloat = 20
     static let floatingButtonMargin: CGFloat = 16
     
     // App info

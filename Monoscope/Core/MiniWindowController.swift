@@ -13,9 +13,12 @@ final class NonActivatingPanel: NSPanel {
 }
 
 class MiniWindowController: NSWindowController, NSWindowDelegate {
+
+    private static var cascadeCountsByScreen: [NSNumber: Int] = [:]
     
     private var webViewController: WebViewController!
     var onClose: ((MiniWindowController) -> Void)?
+    private var cascadeScreenID: NSNumber?
     
     convenience init(url: URL) {
         // Create the frameless panel with default size
@@ -115,11 +118,45 @@ class MiniWindowController: NSWindowController, NSWindowDelegate {
         if let screen = targetScreen {
             let screenFrame = screen.visibleFrame
             let windowFrame = window.frame
-            
-            let x = screenFrame.midX - windowFrame.width / 2
-            let y = screenFrame.midY - windowFrame.height / 2
-            
+
+            let screenID = screenIdentifier(for: screen)
+            let offsetStep = screenID.flatMap { Self.cascadeCountsByScreen[$0] } ?? 0
+            let offset = CGFloat(offsetStep) * Constants.windowOffsetStep
+             
+            var x = screenFrame.midX - windowFrame.width / 2 + offset
+            var y = screenFrame.midY - windowFrame.height / 2 - offset
+
+            let minX = screenFrame.minX
+            let maxX = screenFrame.maxX - windowFrame.width
+            let minY = screenFrame.minY
+            let maxY = screenFrame.maxY - windowFrame.height
+
+            x = min(max(x, minX), maxX)
+            y = min(max(y, minY), maxY)
+             
             window.setFrameOrigin(NSPoint(x: x, y: y))
+
+            if let screenID {
+                cascadeScreenID = screenID
+                Self.cascadeCountsByScreen[screenID] = offsetStep + 1
+            }
+        }
+    }
+
+    private func screenIdentifier(for screen: NSScreen) -> NSNumber? {
+        let key = NSDeviceDescriptionKey("NSScreenNumber")
+        return screen.deviceDescription[key] as? NSNumber
+    }
+
+    private func updateCascadeCountOnClose() {
+        guard let screenID = cascadeScreenID else { return }
+        let currentCount = Self.cascadeCountsByScreen[screenID] ?? 0
+        let updatedCount = max(0, currentCount - 1)
+
+        if updatedCount == 0 {
+            Self.cascadeCountsByScreen.removeValue(forKey: screenID)
+        } else {
+            Self.cascadeCountsByScreen[screenID] = updatedCount
         }
     }
     
@@ -183,6 +220,7 @@ class MiniWindowController: NSWindowController, NSWindowDelegate {
     
     func windowWillClose(_ notification: Notification) {
         saveWindowFrame()
+        updateCascadeCountOnClose()
         onClose?(self)
     }
     
