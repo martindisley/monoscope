@@ -72,6 +72,13 @@ class WebViewController: NSViewController {
             name: .websiteDataDidClear,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(contextMenuWillOpen(_:)),
+            name: NSMenu.didBeginTrackingNotification,
+            object: nil
+        )
     }
     
     private func setupWebView() {
@@ -186,6 +193,29 @@ class WebViewController: NSViewController {
     @objc func websiteDataDidClear() {
         webView?.reloadFromOrigin()
     }
+
+    @objc private func contextMenuWillOpen(_ notification: Notification) {
+        guard let menu = notification.object as? NSMenu else { return }
+        guard view.window?.isKeyWindow == true else { return }
+
+        let titles = menu.items.map { $0.title }
+        guard titles.contains("Back"), titles.contains("Reload") else { return }
+
+        for item in menu.items where item.action == #selector(clearWebsiteDataForCurrentSite) {
+            menu.removeItem(item)
+        }
+
+        let clearItem = NSMenuItem(
+            title: "Clear Data for This Site",
+            action: #selector(clearWebsiteDataForCurrentSite),
+            keyEquivalent: ""
+        )
+        clearItem.target = self
+        clearItem.isEnabled = !(webView?.url?.host?.isEmpty ?? true)
+
+        menu.addItem(NSMenuItem.separator())
+        menu.addItem(clearItem)
+    }
     
     private func recreateWebView() {
         // Save current URL to restore after recreation
@@ -217,6 +247,27 @@ class WebViewController: NSViewController {
         pasteboard.setString(currentURL.absoluteString, forType: .string)
         
         print("📋 Copied URL to clipboard: \(currentURL.absoluteString)")
+    }
+
+    @objc func clearWebsiteDataForCurrentSite() {
+        guard let host = webView?.url?.host, !host.isEmpty else {
+            NSSound.beep()
+            return
+        }
+
+        let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: dataTypes) { records in
+            let matchingRecords = records.filter { record in
+                record.displayName == host || record.displayName.hasSuffix(".\(host)")
+            }
+
+            WKWebsiteDataStore.default().removeData(ofTypes: dataTypes, for: matchingRecords) {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .websiteDataDidClear, object: nil)
+                    print("🗑️ Cleared website data for \(host)")
+                }
+            }
+        }
     }
     
     @objc func openInMainBrowser() {
@@ -535,6 +586,7 @@ extension WebViewController: WKUIDelegate {
         alert.runModal()
         completionHandler()
     }
+
     
     // Handle JavaScript confirms
     func webView(_ webView: WKWebView,

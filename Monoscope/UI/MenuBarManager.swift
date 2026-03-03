@@ -14,10 +14,7 @@ class MenuBarManager: NSObject {
     private var statusItem: NSStatusItem?
     private var settingsWindow: NSWindow?
     private var aboutWindow: NSWindow?
-    private var clearSiteMenuItem: NSMenuItem?
-    private var historyMenuItem: NSMenuItem?
     private let historyMenu = NSMenu()
-    private var lastVisitedHost: String?
     
     weak var appDelegate: AppDelegate?
     
@@ -59,15 +56,6 @@ class MenuBarManager: NSObject {
         let historyItem = NSMenuItem(title: "History", action: nil, keyEquivalent: "")
         historyItem.submenu = historyMenu
         menu.addItem(historyItem)
-        historyMenuItem = historyItem
-
-        let clearSiteItem = NSMenuItem(
-            title: "Clear Data for This Site",
-            action: #selector(clearWebsiteDataForCurrentSite),
-            keyEquivalent: ""
-        )
-        menu.addItem(clearSiteItem)
-        clearSiteMenuItem = clearSiteItem
 
         menu.addItem(
             NSMenuItem(
@@ -94,13 +82,6 @@ class MenuBarManager: NSObject {
         
         statusItem?.menu = menu
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(currentURLDidChange(_:)),
-            name: .currentURLDidChange,
-            object: nil
-        )
-        
         print("✅ Menu bar setup complete")
     }
     
@@ -143,14 +124,6 @@ class MenuBarManager: NSObject {
         window.makeKeyAndOrderFront(nil)
     }
 
-    @objc func currentURLDidChange(_ notification: Notification) {
-        guard let url = notification.object as? URL else {
-            lastVisitedHost = nil
-            return
-        }
-        lastVisitedHost = url.host
-    }
-
     @objc func clearWebsiteData() {
         let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
 
@@ -158,27 +131,6 @@ class MenuBarManager: NSObject {
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .websiteDataDidClear, object: nil)
                 print("🗑️ Cleared website data")
-            }
-        }
-    }
-
-    @objc func clearWebsiteDataForCurrentSite() {
-        guard let host = lastVisitedHost, !host.isEmpty else {
-            NSSound.beep()
-            return
-        }
-
-        let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
-        WKWebsiteDataStore.default().fetchDataRecords(ofTypes: dataTypes) { records in
-            let matchingRecords = records.filter { record in
-                record.displayName == host || record.displayName.hasSuffix(".\(host)")
-            }
-
-            WKWebsiteDataStore.default().removeData(ofTypes: dataTypes, for: matchingRecords) {
-                DispatchQueue.main.async {
-                    NotificationCenter.default.post(name: .websiteDataDidClear, object: nil)
-                    print("🗑️ Cleared website data for \(host)")
-                }
             }
         }
     }
@@ -224,6 +176,5 @@ class MenuBarManager: NSObject {
 extension MenuBarManager: NSMenuDelegate {
     func menuWillOpen(_ menu: NSMenu) {
         rebuildHistoryMenu()
-        clearSiteMenuItem?.isEnabled = (lastVisitedHost != nil)
     }
 }
