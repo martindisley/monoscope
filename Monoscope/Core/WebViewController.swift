@@ -15,6 +15,10 @@ class WebViewController: NSViewController {
     private var floatingButtonHost: NSHostingView<FloatingButton>?
     private var titleBarView: TitleBarView?
     private var initialURL: URL?
+    private var addressBarContainer: NSView?
+    private var addressField: AddressBarTextField?
+    private var addressBarMonitor: Any?
+    private var isAddressBarVisible = false
     
     var onRequestClose: (() -> Void)?
     
@@ -124,6 +128,7 @@ class WebViewController: NSViewController {
         // Now that webView exists, restore zoom and setup floating button
         restoreZoomLevel()
         setupFloatingButton()
+        setupAddressBar()
         
         // Load initial URL if we have one
         if let url = initialURL {
@@ -140,6 +145,10 @@ class WebViewController: NSViewController {
     deinit {
         // Remove KVO observer
         webView?.removeObserver(self, forKeyPath: "title")
+
+        if let monitor = addressBarMonitor {
+            NSEvent.removeMonitor(monitor)
+        }
         
         // Remove notification observers
         NotificationCenter.default.removeObserver(self)
@@ -171,6 +180,55 @@ class WebViewController: NSViewController {
         
         floatingButtonHost = hostingView
     }
+
+    private func setupAddressBar() {
+        guard addressBarContainer == nil else { return }
+
+        let container = NSView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.wantsLayer = true
+        container.layer?.backgroundColor = NSColor(white: 0.12, alpha: 0.92).cgColor
+        container.layer?.cornerRadius = 7
+        container.layer?.borderWidth = 1
+        container.layer?.borderColor = NSColor(white: 1.0, alpha: 0.08).cgColor
+        container.layer?.shadowColor = NSColor.black.cgColor
+        container.layer?.shadowOpacity = 0.35
+        container.layer?.shadowRadius = 10
+        container.layer?.shadowOffset = CGSize(width: 0, height: -3)
+
+        let field = AddressBarTextField()
+        field.translatesAutoresizingMaskIntoConstraints = false
+        field.isBordered = false
+        field.backgroundColor = .clear
+        field.focusRingType = .none
+        field.font = NSFont.systemFont(ofSize: 12, weight: .medium)
+        field.textColor = NSColor(white: 0.92, alpha: 1.0)
+        field.placeholderString = "Search or enter address"
+        field.delegate = self
+        field.target = self
+        field.action = #selector(addressBarSubmit)
+        field.onEscape = { [weak self] in
+            self?.hideAddressBar()
+        }
+
+        container.addSubview(field)
+        view.addSubview(container)
+
+        NSLayoutConstraint.activate([
+            container.leadingAnchor.constraint(equalTo: webView.leadingAnchor, constant: 12),
+            container.bottomAnchor.constraint(equalTo: webView.bottomAnchor, constant: -12),
+            container.widthAnchor.constraint(equalToConstant: 420),
+            container.heightAnchor.constraint(equalToConstant: 30),
+
+            field.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
+            field.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
+            field.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
+
+        container.isHidden = true
+        addressBarContainer = container
+        addressField = field
+    }
     
     func updateFloatingButtonVisibility() {
         if SettingsStore.shared.settings.showFloatingButton {
@@ -198,8 +256,17 @@ class WebViewController: NSViewController {
         guard let menu = notification.object as? NSMenu else { return }
         guard view.window?.isKeyWindow == true else { return }
 
-        let titles = menu.items.map { $0.title }
-        guard titles.contains("Back"), titles.contains("Reload") else { return }
+        guard let event = NSApp.currentEvent else { return }
+        switch event.type {
+        case .rightMouseDown, .rightMouseUp, .otherMouseDown, .otherMouseUp:
+            break
+        default:
+            return
+        }
+
+        guard event.window == view.window else { return }
+        let location = view.convert(event.locationInWindow, from: nil)
+        guard webView.frame.contains(location) else { return }
 
         for item in menu.items where item.action == #selector(clearWebsiteDataForCurrentSite) {
             menu.removeItem(item)
@@ -229,7 +296,13 @@ class WebViewController: NSViewController {
         // Remove floating button (will be recreated with new webview)
         floatingButtonHost?.removeFromSuperview()
         floatingButtonHost = nil
-        
+
+        // Remove address bar (will be recreated with new webview)
+        addressBarContainer?.removeFromSuperview()
+        addressBarContainer = nil
+        addressField = nil
+        isAddressBarVisible = false
+
         // Set initialURL to current page so it loads after recreation
         initialURL = currentURL
         
@@ -247,6 +320,29 @@ class WebViewController: NSViewController {
         pasteboard.setString(currentURL.absoluteString, forType: .string)
         
         print("📋 Copied URL to clipboard: \(currentURL.absoluteString)")
+    }
+
+    @objc private func addressBarSubmit() {
+        guard let field = addressField else { return }
+        let input = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !input.isEmpty else {
+            hideAddressBar()
+            return
+        }
+
+        let destination: URL?
+        if let url = normalizedURL(from: input) {
+            destination = url
+        } else {
+            destination = searchURL(for: input)
+        }
+
+        if let destination {
+            webView.load(URLRequest(url: destination))
+        }
+
+        hideAddressBar()
     }
 
     @objc func clearWebsiteDataForCurrentSite() {
@@ -298,6 +394,84 @@ class WebViewController: NSViewController {
     
     @objc func closeWindow() {
         onRequestClose?()
+    }
+
+    private func showAddressBar() {
+        guard let container = addressBarContainer, let field = addressField else { return }
+
+        let currentURL = webView.url?.absoluteString ?? ""
+        field.stringValue = currentURL
+
+        container.isHidden = false
+        isAddressBarVisible = true
+
+        view.window?.makeFirstResponder(field)
+        if let editor = field.currentEditor() {
+            editor.selectedRange = NSRange(location: 0, length: currentURL.count)
+        }
+
+        if addressBarMonitor == nil {
+            addressBarMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
+                guard let self, self.isAddressBarVisible else { return event }
+                let location = self.view.convert(event.locationInWindow, from: nil)
+                if let container = self.addressBarContainer, !container.frame.contains(location) {
+                    self.hideAddressBar()
+                }
+                return event
+            }
+        }
+    }
+
+    private func hideAddressBar() {
+        isAddressBarVisible = false
+        addressBarContainer?.isHidden = true
+        view.window?.makeFirstResponder(webView)
+
+        if let monitor = addressBarMonitor {
+            NSEvent.removeMonitor(monitor)
+            addressBarMonitor = nil
+        }
+    }
+
+    private func normalizedURL(from input: String) -> URL? {
+        if let url = URL(string: input), url.scheme != nil {
+            return url
+        }
+
+        if isLocalhost(input) || isIPAddress(input) {
+            return URL(string: "http://\(input)")
+        }
+
+        if !input.contains(" ") && input.contains(".") {
+            return URL(string: "https://\(input)")
+        }
+
+        return nil
+    }
+
+    private func isLocalhost(_ input: String) -> Bool {
+        return input == "localhost" || input.hasPrefix("localhost:")
+    }
+
+    private func isIPAddress(_ input: String) -> Bool {
+        let host = input.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true).first
+        guard let host else { return false }
+
+        if String(host).contains(":") {
+            return true
+        }
+
+        let parts = host.split(separator: ".")
+        guard parts.count == 4 else { return false }
+        for part in parts {
+            guard let value = Int(part), value >= 0 && value <= 255 else { return false }
+        }
+        return true
+    }
+
+    private func searchURL(for query: String) -> URL? {
+        let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? query
+        return URL(string: "https://www.google.com/search?q=\(encoded)")
     }
     
     @objc func zoomIn() {
@@ -358,6 +532,9 @@ class WebViewController: NSViewController {
         // Command key combinations
         if flags == .command {
             switch event.charactersIgnoringModifiers {
+            case "l":
+                showAddressBar()
+                return
             case "o":
                 openInMainBrowser()
                 return
@@ -400,9 +577,16 @@ class WebViewController: NSViewController {
         }
         
         // Escape key (keyCode 53)
-        if event.keyCode == 53 && SettingsStore.shared.settings.escClosesWindow {
-            closeWindow()
-            return
+        if event.keyCode == 53 {
+            if isAddressBarVisible {
+                hideAddressBar()
+                return
+            }
+
+            if SettingsStore.shared.settings.escClosesWindow {
+                closeWindow()
+                return
+            }
         }
         
         super.keyDown(with: event)
@@ -460,6 +644,9 @@ extension WebViewController: WKNavigationDelegate {
         if let url = webView.url {
             NotificationCenter.default.post(name: .currentURLDidChange, object: url)
             HistoryStore.shared.add(url: url, title: webView.title)
+            if !isAddressBarVisible || addressField?.currentEditor() == nil {
+                addressField?.stringValue = url.absoluteString
+            }
             print("✅ Page loaded successfully: \(url.absoluteString)")
         } else {
             print("✅ Page loaded successfully: unknown")
@@ -612,6 +799,16 @@ extension WebViewController: WKUIDelegate {
     }
 }
 
+// MARK: - NSTextFieldDelegate
+
+extension WebViewController: NSTextFieldDelegate {
+    func controlTextDidEndEditing(_ obj: Notification) {
+        if isAddressBarVisible {
+            hideAddressBar()
+        }
+    }
+}
+
 // MARK: - Title Bar View
 
 class TitleBarView: NSView {
@@ -663,5 +860,20 @@ class TitleBarView: NSView {
     
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
         return true
+    }
+}
+
+// MARK: - Address Bar Text Field
+
+class AddressBarTextField: NSTextField {
+    var onEscape: (() -> Void)?
+
+    override func keyDown(with event: NSEvent) {
+        if event.keyCode == 53 {
+            onEscape?()
+            return
+        }
+
+        super.keyDown(with: event)
     }
 }
